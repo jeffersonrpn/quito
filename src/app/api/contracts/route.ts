@@ -1,4 +1,4 @@
-export async function GET(params: Request) {
+export async function GET() {
   const contracts = [
     {
       id: "manuipad",

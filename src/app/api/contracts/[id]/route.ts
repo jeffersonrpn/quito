@@ -1,8 +1,10 @@
 import { JWT } from "google-auth-library";
-const { GoogleSpreadsheet } = require("google-spreadsheet");
+import { GoogleSpreadsheet } from "google-spreadsheet";
+
+import { SpreadsheetRow } from "../types";
 
 export async function GET(
-  request: Request,
+  _: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const id = (await params).id;
@@ -12,7 +14,7 @@ export async function GET(
     key: process.env.GOOGLE_PRIVATE_KEY,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
-  const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID, jwt);
+  const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID || "", jwt);
   await doc.loadInfo();
 
   const sheet = doc.sheetsByTitle[id];
@@ -23,8 +25,8 @@ export async function GET(
     });
   }
 
-  const unformattedRows = await sheet.getRows();
-  const rows = unformattedRows.map((row: any) => ({
+  const unformattedRows = await sheet.getRows<SpreadsheetRow>();
+  const rows = unformattedRows.map((row) => ({
     number: +row.get("number"),
     value: parseFloat((row.get("value") || "0").replace(",", ".")),
     balance: parseFloat((row.get("balance") || "0").replace(",", ".")),

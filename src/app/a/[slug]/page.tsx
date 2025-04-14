@@ -10,12 +10,16 @@ type Contract = {
   total: number;
 };
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
   let contracts: Contract[] = [];
   try {
-    const res = await fetch(
-      `${process.env.API_BASE_URL}/contracts/${params.slug}`
-    );
+    const res = await fetch(`${process.env.API_BASE_URL}/contracts/${slug}`);
 
     if (!res.ok) {
       notFound();
@@ -23,6 +27,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
     contracts = await res.json();
   } catch (error) {
+    console.error("Error fetching contracts:", error);
     return (
       <main className="p-8">
         <h1 className="text-2xl font-bold text-red-600 mb-4">
