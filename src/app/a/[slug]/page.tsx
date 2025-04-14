@@ -1,14 +1,6 @@
-// src/app/a/[slug]/page.tsx
-import { notFound } from "next/navigation";
+import Link from "next/link";
 
-type Contract = {
-  number: number;
-  value: number;
-  balance: number;
-  status: boolean;
-  date: Date;
-  total: number;
-};
+import { Contract } from "../../api/contracts/types";
 
 export default async function Page({
   params,
@@ -21,8 +13,22 @@ export default async function Page({
   try {
     const res = await fetch(`${process.env.API_BASE_URL}/contracts/${slug}`);
 
+    if (res.status === 404) {
+      return (
+        <main className="p-8">
+          <h1 className="text-2xl font-bold text-red-600 mb-2">
+            Planilha não encontrada
+          </h1>
+          <p className="mb-4 text-gray-700">
+            Não encontramos nenhuma planilha com o identificador{" "}
+            <strong>{slug}</strong>.
+          </p>
+        </main>
+      );
+    }
+
     if (!res.ok) {
-      notFound();
+      throw new Error(`${res.status} ${res.statusText} ${res.url}`);
     }
 
     contracts = await res.json();
@@ -36,6 +42,12 @@ export default async function Page({
         <p className="text-gray-600">
           Verifique a URL ou tente novamente mais tarde.
         </p>
+        <Link
+          href={`/a/${slug}`}
+          className="text-blue-600 hover:underline"
+        >
+          Tentar novamente
+        </Link>
       </main>
     );
   }
