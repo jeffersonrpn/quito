@@ -29,6 +29,7 @@ export async function GET(
   const rows = unformattedRows.map((row) => ({
     number: +row.get("number"),
     value: parseFloat((row.get("value") || "0").replace(",", ".")),
+    fee: parseFloat((row.get("fee") || "0").replace(",", ".")),
     balance: parseFloat((row.get("balance") || "0").replace(",", ".")),
     status: row.get("status") === "1",
     date: parseDate(row.get("date") || "01/01/1970"),

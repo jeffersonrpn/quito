@@ -1,31 +1,7 @@
+import { ContractsData } from '../../data/contracts';
+
 export async function GET() {
-  const contracts = [
-    {
-      id: "manuipad",
-      description: "iPad & iPencil",
-      active: true,
-    },
-    {
-      id: "terebici",
-      description: "Reforma da bicicleta",
-      active: true,
-    },
-    {
-      id: "hiannebici",
-      description: "Reforma da bicicleta",
-      active: true,
-    },
-    {
-      id: "wellycarro",
-      description: "Pegeaut 206",
-      active: true,
-    },
-    {
-      id: "gabicasa",
-      description: "Casa",
-      active: true,
-    },
-  ];
+  const contracts = ContractsData;
 
   return new Response(JSON.stringify(contracts), {
     status: 200,

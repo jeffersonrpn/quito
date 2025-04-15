@@ -1,6 +1,11 @@
 import Link from "next/link";
 
 import { Contract } from "../../api/contracts/types";
+import { Person } from "../../api/person/types";
+import Header from "./components/Header";
+import Entry from "./components/Entry";
+import Summary from "./components/Summary";
+import FullContract from "./components/FullContract";
 
 export default async function Page({
   params,
@@ -9,9 +14,9 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
-  let contracts: Contract[] = [];
+  let person: Person | null = null;
   try {
-    const res = await fetch(`${process.env.API_BASE_URL}/contracts/${slug}`);
+    const res = await fetch(`${process.env.API_BASE_URL}/person/${slug}`);
 
     if (res.status === 404) {
       return (
@@ -26,12 +31,26 @@ export default async function Page({
         </main>
       );
     }
+    person = await res.json();
+  } catch (error) {
+    console.error("Error fetching person:", error);
+  }
+
+  let allContracts: Contract[] = [];
+  let paidContracts: Contract[] = [];
+  let currentContract: Contract | null = null;
+  let contracts: Contract[] = [];
+  try {
+    const res = await fetch(`${process.env.API_BASE_URL}/contracts/${slug}`);
 
     if (!res.ok) {
       throw new Error(`${res.status} ${res.statusText} ${res.url}`);
     }
 
-    contracts = await res.json();
+    allContracts = await res.json();
+    paidContracts = allContracts.filter((contract) => contract.status);
+    contracts = allContracts.filter((contract) => !contract.status);
+    currentContract = contracts.splice(0, 1)[0];
   } catch (error) {
     console.error("Error fetching contracts:", error);
     return (
@@ -42,10 +61,7 @@ export default async function Page({
         <p className="text-gray-600">
           Verifique a URL ou tente novamente mais tarde.
         </p>
-        <Link
-          href={`/a/${slug}`}
-          className="text-blue-600 hover:underline"
-        >
+        <Link href={`/a/${slug}`} className="text-blue-600 hover:underline">
           Tentar novamente
         </Link>
       </main>
@@ -53,32 +69,25 @@ export default async function Page({
   }
 
   return (
-    <main className="p-8">
-      {contracts.length === 0 ? (
-        <p className="text-gray-500">Nenhum registro encontrado</p>
-      ) : (
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr>
-              <th className="border-b p-2">Número</th>
-              <th className="border-b p-2">Valor</th>
-              <th className="border-b p-2">Saldo</th>
-              <th className="border-b p-2">Data</th>
-              <th className="border-b p-2">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contracts.map((c, i) => (
-              <tr key={i}>
-                <td className="border-b p-2">{c.number}</td>
-                <td className="border-b p-2">{c.value.toFixed(2)}</td>
-                <td className="border-b p-2">{c.balance.toFixed(2)}</td>
-                <td className="border-b p-2">{c.date.toString()}</td>
-                <td className="border-b p-2">{c.total.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <main>
+      {person && <Header person={person} />}
+
+      {allContracts.length && (
+        <>
+          {person && (
+            <Summary
+              person={person}
+              contract={allContracts[allContracts.length - 1]}
+            />
+          )}
+          {paidContracts && <FullContract title="Pagas" contracts={paidContracts} />}
+          <Entry
+            key={currentContract.number}
+            contract={currentContract}
+            current={true}
+          />
+          {contracts && <FullContract title="A pagar" contracts={contracts} />}
+        </>
       )}
     </main>
   );
