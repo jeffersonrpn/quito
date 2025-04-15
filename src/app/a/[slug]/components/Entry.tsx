@@ -40,6 +40,7 @@ const Entry = (props: EntryProps) => {
                 <Typography variant="body1">
                   {shortdate(contract.date.toString())}
                 </Typography>
+                {current && <Badge>Atual</Badge>}
               </Grid>
             </Grid>
           </CardContent>
