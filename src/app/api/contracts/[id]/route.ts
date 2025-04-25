@@ -1,7 +1,7 @@
 import { JWT } from "google-auth-library";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 
-import { SpreadsheetRow } from "../types";
+import { Contract, SpreadsheetRow } from "../types";
 
 export async function GET(
   _: Request,
@@ -32,9 +32,10 @@ export async function GET(
     fee: parseFloat((row.get("fee") || "0").replace(",", ".")),
     balance: parseFloat((row.get("balance") || "0").replace(",", ".")),
     status: row.get("status") === "1",
-    date: parseDate(row.get("date") || "01/01/1970"),
+    duedate: parseDate(row.get("duedate") || "01/01/1970"),
+    date: parseDate(row.get("date") || ""),
     total: parseFloat((row.get("total") || "0").replace(",", ".")),
-  }));
+  })) as Contract[];
 
   return new Response(JSON.stringify(rows), {
     status: 200,

@@ -4,6 +4,7 @@ export interface SpreadsheetRow {
   fee: string;
   balance: string;
   status: string;
+  duedate: string;
   date: string;
   total: string;
 }
@@ -14,6 +15,8 @@ export type Contract = {
   fee: number;
   balance: number;
   status: boolean;
+  duedate: Date;
   date: Date;
   total: number;
+  quito: number;
 };

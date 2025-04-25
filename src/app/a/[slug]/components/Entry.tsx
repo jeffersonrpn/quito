@@ -1,10 +1,10 @@
 import {
   Avatar,
-  Badge,
   Box,
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Grid,
   Typography,
 } from "@mui/material";
@@ -22,6 +22,7 @@ const Entry = (props: EntryProps) => {
   const paid = contract.status
     ? { backgroundColor: "#dedbd2" }
     : { backgroundColor: "#ffffff" };
+
   return (
     <Box m={2}>
       <Card elevation={elevation} sx={paid}>
@@ -34,13 +35,20 @@ const Entry = (props: EntryProps) => {
                 </Avatar>
               </Grid>
               <Grid>
-                <Typography variant="body1">
-                  {currency(contract.value)}
-                </Typography>
-                <Typography variant="body1">
-                  {shortdate(contract.date.toString())}
-                </Typography>
-                {current && <Badge>Atual</Badge>}
+                {current && <Typography variant="body1">Próxima</Typography>}
+                <Box mb={2}>
+                  <Typography variant="h5" sx={{ color: "#00786a" }}>
+                    {currency(contract.value)}
+                  </Typography>
+                  <Typography variant="body1">
+                    {shortdate(contract.duedate.toString())}
+                  </Typography>
+                </Box>
+                {contract.date && (
+                  <Chip
+                    label={`Pago em ${shortdate(contract.date.toString())}`}
+                  />
+                )}
               </Grid>
             </Grid>
           </CardContent>

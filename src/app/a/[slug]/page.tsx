@@ -40,6 +40,7 @@ export default async function Page({
   let paidContracts: Contract[] = [];
   let currentContract: Contract | null = null;
   let contracts: Contract[] = [];
+
   try {
     const res = await fetch(`${process.env.API_BASE_URL}/contracts/${slug}`);
 
@@ -78,15 +79,19 @@ export default async function Page({
             <Summary
               person={person}
               contract={allContracts[allContracts.length - 1]}
+              totalContracts={contracts.length + 1}
+              totalDue={contracts.reduce((sum, row) => sum + row.value, 0)}
             />
           )}
-          {paidContracts && <FullContract title="Pagas" contracts={paidContracts} />}
+          {paidContracts.length > 0 && (
+            <FullContract title="Anteriores" contracts={paidContracts} />
+          )}
           <Entry
             key={currentContract.number}
             contract={currentContract}
             current={true}
           />
-          {contracts && <FullContract title="A pagar" contracts={contracts} />}
+          {contracts && <FullContract title="Próximas" contracts={contracts} />}
         </>
       )}
     </main>
