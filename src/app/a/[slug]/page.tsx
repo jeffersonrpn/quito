@@ -79,8 +79,7 @@ export default async function Page({
             <Summary
               person={person}
               contract={allContracts[allContracts.length - 1]}
-              totalContracts={contracts.length + 1}
-              totalDue={contracts.reduce((sum, row) => sum + row.value, 0)}
+              allContracts={allContracts}
             />
           )}
           {paidContracts.length > 0 && (

@@ -3,5 +3,6 @@ export type Person = {
   person: string;
   avatar: string;
   description: string;
+  type: "direto" | "emprestimo";
   active: boolean;
 };

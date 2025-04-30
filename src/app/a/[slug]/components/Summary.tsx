@@ -3,6 +3,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Grid,
   Typography,
 } from "@mui/material";
@@ -13,12 +14,23 @@ import { currency } from "@/app/utils/utils";
 type SummaryProps = {
   person: Person;
   contract: Contract;
-  totalDue: number;
-  totalContracts: number;
+  allContracts: Contract[];
 };
 
 const Summary = (props: SummaryProps) => {
-  const { person, contract, totalDue, totalContracts } = props;
+  const { person, contract, allContracts } = props;
+
+  const contracts = allContracts.filter((contract) => !contract.status);
+  const paidContracts = allContracts.filter((contract) => contract.status);
+  const totalContracts = contracts.length;
+  const totalDue = allContracts
+    .filter((contract) => !contract.status)
+    .reduce((sum, row) => sum + row.value, 0);
+  const totalBalance =
+    paidContracts.length > 0
+      ? paidContracts[paidContracts.length - 1].fee
+      : contracts[0].total;
+  const showDue = totalDue - totalBalance > 0;
 
   return (
     <Box sx={{ margin: "-2rem 1rem 2rem 1rem" }}>
@@ -65,6 +77,20 @@ const Summary = (props: SummaryProps) => {
                   parcelas
                 </Grid>
               </Grid>
+              {showDue && (
+                <Box mt={2}>
+                  <Grid container alignItems="center" justifyContent="flex-end" spacing={2}>
+                    <Grid>
+                      <Typography variant="body2" sx={{ color: "#424242" }}>
+                        Negociação pra hoje:
+                      </Typography>
+                    </Grid>
+                    <Grid>
+                      <Chip label={currency(totalBalance)} color="secondary" />
+                    </Grid>
+                  </Grid>
+                </Box>
+              )}
             </CardContent>
           </CardActionArea>
         </Box>
